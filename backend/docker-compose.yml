@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: pharmadash-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: pharmadash
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d pharmadash"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pharmadash-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pharmadash-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: admin
+      DB_PASSWORD: admin123
+      DB_NAME: pharmadash
+      DATABASE_URL: "postgresql://admin:admin123@postgres:5432/pharmadash?schema=public"
+      JWT_SECRET: pharmadash_super_secret_jwt_key_2024
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+      - ./scripts:/app/scripts
+      - /app/node_modules
+      - /app/dist
+    networks:
+      - pharmadash-network
+
+  adminer:
+    image: adminer:latest
+    container_name: pharmadash-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - pharmadash-network
+
+networks:
+  pharmadash-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

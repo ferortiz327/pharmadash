@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CASHIER
+  PHARMACIST
+}
+
+enum Category {
+  GENERIC
+  ANTIBIOTIC
+  COLD_CHAIN
+}
+
+enum SaleStatus {
+  COMPLETED
+  CANCELLED
+  PENDING
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         UserRole  @default(CASHIER)
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  
+  sales        Sale[]
+  audits       AuditLog[]
+
+  @@map("users")
+}
+
+model Medicine {
+  id             String     @id @default(uuid())
+  sku            String     @unique
+  name           String
+  category       Category   @default(GENERIC)
+  price          Float
+  stock          Int        @default(0)
+  expirationDate DateTime
+  imageUrl       String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  saleItems      SaleItem[]
+
+  @@map("medicines")
+}
+
+model Sale {
+  id          String      @id @default(uuid())
+  cashierId   String
+  cashier     User        @relation(fields: [cashierId], references: [id])
+  items       SaleItem[]
+  subtotal    Float
+  tax         Float
+  total       Float
+  status      SaleStatus  @default(COMPLETED)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("sales")
+}
+
+model SaleItem {
+  id          String    @id @default(uuid())
+  saleId      String
+  sale        Sale      @relation(fields: [saleId], references: [id])
+  medicineId  String
+  medicine    Medicine  @relation(fields: [medicineId], references: [id])
+  quantity    Int
+  unitPrice   Float
+  subtotal    Float
+  tax         Float
+  total       Float
+  createdAt   DateTime  @default(now())
+
+  @@map("sale_items")
+}
+
+model AuditLog {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  action      String
+  entity      String
+  entityId    String?
+  details     Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime  @default(now())
+
+  @@map("audit_logs")
+}
