@@ -4,7 +4,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
-
 @Component({
   selector: 'app-medicine-form',
   templateUrl: './medicine-form.component.html',
@@ -80,7 +79,13 @@ export class MedicineFormComponent implements OnInit {
     }
 
     this.loading = true;
-    const data = this.medicineForm.value;
+
+    // ✅ CORREGIDO: Convertir la fecha a formato ISO-8601
+    const formValue = this.medicineForm.value;
+    const data = {
+      ...formValue,
+      expirationDate: new Date(formValue.expirationDate).toISOString()
+    };
 
     const request = this.isEdit
       ? this.http.put(`${environment.apiUrl}/medicines/${this.medicineId}`, data)
