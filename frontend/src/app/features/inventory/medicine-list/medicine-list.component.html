@@ -1,0 +1,51 @@
+<div class="medicine-list-container">
+  <div class="header">
+    <h1>💊 Medicamentos</h1>
+    <button class="btn-primary" routerLink="/medicines/new">+ Nuevo Medicamento</button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Cargando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="table-container" *ngIf="!loading && medicines.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>SKU</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          <th>Vencimiento</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let medicine of medicines" [class.critical]="medicine.isCriticalStock" [class.expiring]="medicine.isExpiringSoon">
+          <td>{{ medicine.sku }}</td>
+          <td>{{ medicine.name }}</td>
+          <td><span class="badge" [ngClass]="getCategoryClass(medicine.category)">{{ medicine.categoryLabel }}</span></td>
+          <td>${{ medicine.price | number:'1.2-2' }}</td>
+          <td>{{ medicine.stock }}</td>
+          <td>{{ medicine.expirationDate | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <span class="status-badge" *ngIf="medicine.isCriticalStock">⚠️ Stock Crítico</span>
+            <span class="status-badge expiring" *ngIf="medicine.isExpiringSoon">⏰ Próximo a Vencer</span>
+            <span class="status-badge normal" *ngIf="!medicine.isCriticalStock && !medicine.isExpiringSoon">✅ Normal</span>
+          </td>
+          <td>
+            <button class="btn-edit" [routerLink]="['/medicines', medicine.id, 'edit']">✏️</button>
+            <button class="btn-delete" (click)="deleteMedicine(medicine.id)">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination" *ngIf="pagination.totalPages > 1">
+    <button [disabled]="!pagination.hasPrev" (click)="loadMedicines(pagination.page - 1)">Anterior</button>
+    <span>Página {{ pagination.page }} de {{ pagination.totalPages }}</span>
+    <button [disabled]="!pagination.hasNext" (click)="loadMedicines(pagination.page + 1)">Siguiente</button>
+  </div>
+</div>

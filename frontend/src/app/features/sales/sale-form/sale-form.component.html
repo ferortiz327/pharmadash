@@ -1,0 +1,99 @@
+<div class="sale-form-container">
+  <h1>💰 Nueva Venta</h1>
+
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="sale-layout">
+    <!-- Panel de búsqueda -->
+    <div class="search-panel">
+      <h3>🔍 Buscar Medicamento</h3>
+
+      <!-- AQUÍ ESTÁ LA CORRECCIÓN: formGroup -->
+      <div [formGroup]="saleForm">
+        <div class="search-group">
+          <input
+            type="text"
+            formControlName="search"
+            placeholder="Buscar por nombre o SKU..."
+            class="form-control"
+            (input)="searchMedicine()"
+          >
+          <div class="quantity-group">
+            <label>Cantidad:</label>
+            <input
+              type="number"
+              formControlName="quantity"
+              class="form-control quantity-input"
+              min="1"
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="search-results" *ngIf="searchResults.length > 0">
+        <div
+          class="result-item"
+          *ngFor="let med of searchResults"
+          (click)="selectMedicine(med)"
+        >
+          <div class="result-info">
+            <strong>{{ med.name }}</strong>
+            <span class="sku">{{ med.sku }}</span>
+          </div>
+          <div class="result-details">
+            <span class="stock">Stock: {{ med.stock }}</span>
+            <span class="price">${{ med.price | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel del carrito -->
+    <div class="cart-panel">
+      <h3>🛒 Carrito de Venta</h3>
+
+      <div *ngIf="cart.length === 0" class="empty-cart">
+        <p>El carrito está vacío</p>
+        <p class="hint">Busca y selecciona medicamentos para agregar</p>
+      </div>
+
+      <div class="cart-items" *ngIf="cart.length > 0">
+        <div class="cart-item" *ngFor="let item of cart; let i = index">
+          <div class="item-info">
+            <strong>{{ item.name }}</strong>
+            <span class="sku">{{ item.sku }}</span>
+          </div>
+          <div class="item-details">
+            <span>Cant: {{ item.quantity }}</span>
+            <span>Precio: ${{ item.price | number:'1.2-2' }}</span>
+            <span class="subtotal">Subtotal: ${{ item.subtotal | number:'1.2-2' }}</span>
+          </div>
+          <button class="btn-remove" (click)="removeFromCart(i)">✕</button>
+        </div>
+      </div>
+
+      <div class="cart-summary" *ngIf="cart.length > 0">
+        <div class="summary-row">
+          <span>Subtotal:</span>
+          <span>${{ subtotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Impuestos:</span>
+          <span>${{ taxTotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total:</span>
+          <span>${{ total | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <button
+        class="btn-sale"
+        (click)="processSale()"
+        [disabled]="cart.length === 0 || loading"
+      >
+        {{ loading ? 'Procesando...' : '💳 Procesar Venta' }}
+      </button>
+    </div>
+  </div>
+</div>
