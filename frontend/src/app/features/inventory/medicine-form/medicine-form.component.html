@@ -1,0 +1,73 @@
+<div class="medicine-form-container">
+  <div class="header">
+    <h1>{{ isEdit ? '✏️ Editar Medicamento' : '➕ Nuevo Medicamento' }}</h1>
+    <button class="btn-secondary" routerLink="/medicines">← Volver</button>
+  </div>
+
+  <div *ngIf="loading" class="loading">Cargando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <form [formGroup]="medicineForm" (ngSubmit)="onSubmit()" *ngIf="!loading">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>SKU *</label>
+        <input type="text" formControlName="sku" placeholder="Ej: GEN001" class="form-control">
+        <div class="invalid-feedback" *ngIf="medicineForm.get('sku')?.invalid && medicineForm.get('sku')?.touched">
+          SKU es requerido
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Nombre *</label>
+        <input type="text" formControlName="name" placeholder="Ej: Paracetamol 500mg" class="form-control">
+        <div class="invalid-feedback" *ngIf="medicineForm.get('name')?.invalid && medicineForm.get('name')?.touched">
+          Nombre es requerido
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Categoría *</label>
+        <select formControlName="category" class="form-control">
+          <option *ngFor="let cat of categories" [value]="cat.value">{{ cat.label }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Precio *</label>
+        <input type="number" step="0.01" formControlName="price" placeholder="0.00" class="form-control">
+        <div class="invalid-feedback" *ngIf="medicineForm.get('price')?.invalid && medicineForm.get('price')?.touched">
+          Precio debe ser mayor a 0
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Stock *</label>
+        <input type="number" formControlName="stock" placeholder="0" class="form-control">
+        <div class="invalid-feedback" *ngIf="medicineForm.get('stock')?.invalid && medicineForm.get('stock')?.touched">
+          Stock debe ser mayor a 0
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Fecha de Vencimiento *</label>
+        <input type="date" formControlName="expirationDate" class="form-control">
+        <div class="invalid-feedback" *ngIf="medicineForm.get('expirationDate')?.invalid && medicineForm.get('expirationDate')?.touched">
+          Fecha de vencimiento es requerida
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <label>URL de Imagen</label>
+        <input type="text" formControlName="imageUrl" placeholder="https://ejemplo.com/imagen.jpg" class="form-control">
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn-primary" [disabled]="loading">
+        {{ loading ? 'Guardando...' : (isEdit ? 'Actualizar' : 'Crear') }}
+      </button>
+      <button type="button" class="btn-secondary" routerLink="/medicines">Cancelar</button>
+    </div>
+  </form>
+</div>
+

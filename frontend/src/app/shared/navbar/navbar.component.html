@@ -1,0 +1,10 @@
+<nav class="navbar">
+  <div class="nav-brand">💊 PharmaDash</div>
+  <div class="nav-links">
+    <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    <a routerLink="/medicines" routerLinkActive="active">Medicamentos</a>
+    <a routerLink="/sales" routerLinkActive="active">Ventas</a>
+    <a *ngIf="authService.isAdmin()" routerLink="/medicines/new" routerLinkActive="active">+ Nuevo</a>
+    <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
+  </div>
+</nav>

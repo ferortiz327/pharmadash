@@ -1,0 +1,11 @@
+.dashboard-container { padding: 20px; }
+.dashboard-container h1 { margin-bottom: 30px; color: #333; }
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+.metric-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+.metric-card .metric-icon { font-size: 32px; margin-bottom: 10px; }
+.metric-card .metric-value { font-size: 28px; font-weight: bold; color: #333; margin-bottom: 5px; }
+.metric-card .metric-label { font-size: 14px; color: #666; }
+.metric-card.critical { border-left: 4px solid #dc3545; }
+.metric-card.warning { border-left: 4px solid #ffc107; }
+.loading { text-align: center; padding: 40px; font-size: 18px; color: #666; }
+.error { background: #f8d7da; color: #dc3545; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
